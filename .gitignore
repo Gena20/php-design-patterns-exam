@@ -1,3 +1,5 @@
+Makefile
+.idea/
 /vendor/
 /**/tests/_output/*
 .phpunit.result.cache

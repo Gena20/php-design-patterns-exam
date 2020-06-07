@@ -5,3 +5,5 @@ RUN set -xe \
     && pecl install pcov && docker-php-ext-enable pcov \
     && echo $'pcov.enabled=1\npcov.directory=.\npcov.exclude="~vendor~"' >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini \
     && apk del --no-network .build-deps
+
+WORKDIR app/
