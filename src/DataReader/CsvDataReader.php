@@ -31,12 +31,12 @@ class CsvDataReader extends AbstractDataReader
 
         $data = [];
         while (!$file->eof()) {
-            $line = [];
+            $lineData = [];
             $values = $file->fgetcsv(...array_values($this->options));
             for ($i = 0; $i < count($headers); $i++) {
-                $line[$headers[$i]] = $this->convertValue($values[$i]);
+                $lineData[$headers[$i]] = $this->convertValue($headers[$i], $values[$i]);
             }
-            $data[] = $line;
+            $data[] = (object)$lineData;
         }
 
         return $data;

@@ -27,9 +27,9 @@ class JsonDataReader extends AbstractDataReader
         foreach ($rawData as $line) {
             $lineData = [];
             foreach ($line as $lineKey => $lineVal) {
-                $lineData[$lineKey] = $this->convertValue($lineVal);
+                $lineData[$lineKey] = $this->convertValue($lineKey, $lineVal);
             }
-            $data[] = $lineData;
+            $data[] = (object)$lineData;
         }
 
         return $data;
