@@ -12,28 +12,37 @@ use SplFileObject;
  */
 abstract class AbstractDataReader
 {
+    protected string $filename;
+
     /**
+     * AbstractDataReader constructor.
      * @param string $filename
-     * @return iterable
      */
-    public final static function getData(string $filename): iterable
+    public function __construct(string $filename)
     {
-        $file = static::readFile($filename);
-        return static::parseFileData($file);
+        $this->filename = $filename;
     }
 
     /**
-     * @param string $filename
+     * @return iterable
+     */
+    public final function getData(): iterable
+    {
+        $file = $this->getFile();
+        return $this->parseFileData($file);
+    }
+
+    /**
      * @return SplFileObject
      */
-    protected static function readFile(string $filename): SplFileObject
+    protected function getFile(): SplFileObject
     {
-        return new SplFileObject($filename, 'rb');
+        return new SplFileObject($this->filename, 'rb');
     }
 
     /**
      * @param SplFileObject $file
      * @return iterable
      */
-    abstract static protected function parseFileData(SplFileObject $file): iterable;
+    abstract protected function parseFileData(SplFileObject $file): iterable;
 }
