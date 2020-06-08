@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <div class="container">
+    <h1>Vehicles list</h1>
+    <div class="row">
+      <div class="col-md-6">CSV</div>
+      <div class="col-md-12">
+        <table class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <td>Manufacturer</td>
+            <td>Model</td>
+            <td>IssueDate</td>
+            <td>ModelYear</td>
+            <td>Vin</td>
+            <td>Mileage</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for csvItem in csv %}
+            <tr id="{{ csvItem.id }}">
+              <td>{{ csvItem.manufacturer }}</td>
+              <td><a href="/car?id={{ csvItem.id }}&type=csv">{{ csvItem.model }}</a></td>
+              <td>{{ csvItem.issueDate | date }}</td>
+              <td>{{ csvItem.modelYear | number_format }}</td>
+              <td>{{ csvItem.vin }}</td>
+              <td>{{ csvItem.mileage | number_format }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-6 mt-5">JSON</div>
+      <div class="col-md-12">
+        <table class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <td>Manufacturer</td>
+            <td>Model</td>
+            <td>IssueDate</td>
+            <td>ModelYear</td>
+            <td>Vin</td>
+            <td>Mileage</td>
+          </tr>
+          </thead>
+          <tbody>
+          {% for jsonItem in json %}
+            <tr id="{{ jsonItem.id }}">
+              <td>{{ jsonItem.manufacturer }}</td>
+              <td><a href="/car?id={{ jsonItem.id }}&type=json">{{ jsonItem.model }}</a></td>
+              <td>{{ jsonItem.issueDate | date }}</td>
+              <td>{{ jsonItem.modelYear | number_format }}</td>
+              <td>{{ jsonItem.vin }}</td>
+              <td>{{ jsonItem.mileage | number_format }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

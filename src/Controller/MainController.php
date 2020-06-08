@@ -1,28 +1,36 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Example\Controller;
+namespace App\Controller;
 
-use Example\Adapter\{CsvAdapter, JsonAdapter};
-use Example\Http\{Request, Response};
-use Example\Repository\VehicleRepository;
-use Psr\Container\ContainerInterface;
+use App\DataReader\CsvDataReader;
+use App\DataReader\JsonDataReader;
+use App\Repository\CarRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Main Controller.​​
  */
-class MainController extends AbstractController
+class MainController
 {
-    private CsvAdapter $csvAdapter;
-    private JsonAdapter $jsonAdapter;
+    private CsvDataReader $csvDR;
+    private JsonDataReader $jsonDR;
+    private Environment $twig;
 
     /**
-     * @param ContainerInterface $container
+     * @param CsvDataReader $csvDR
+     * @param JsonDataReader $jsonDR
+     * @param Environment $twig
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Environment $twig, CsvDataReader $csvDR, JsonDataReader $jsonDR)
     {
-        parent::__construct($container);
-        $this->csvAdapter = $this->container->get(CsvAdapter::class);
-        $this->jsonAdapter = $this->container->get(JsonAdapter::class);
+        $this->csvDR = $csvDR;
+        $this->jsonDR = $jsonDR;
+        $this->twig = $twig;
     }
 
     /**
@@ -30,10 +38,9 @@ class MainController extends AbstractController
      */
     public function index(): Response
     {
-        $csvData = (new VehicleRepository($this->csvAdapter))->get();
-        $jsonData = (new VehicleRepository($this->jsonAdapter))->get();
-
-        return $this->render('vehicles.html.twig', [
+        $csvData = (new CarRepository($this->csvDR))->getRange(100);
+        $jsonData = (new CarRepository($this->jsonDR))->getRange(100);
+        return $this->render('cars.html.twig', [
             'csv' => $csvData,
             'json' => $jsonData,
         ]);
@@ -46,24 +53,33 @@ class MainController extends AbstractController
      */
     public function show(Request $request): Response
     {
-        $query = $request->getQuery();
-        if (($id = $query->get('id')) === null || ($type = $query->get('type')) === null) {
+        if (($id = $request->get('id')) === null || ($type = $request->get('type')) === null) {
             return new Response(\sprintf('\'%s\' and \'%s\' must be defined', 'id', 'type'), Response::HTTP_BAD_REQUEST);
         }
 
         if ($type === 'csv') {
-            $adapter = $this->csvAdapter;
+            $reader = $this->csvDR;
         } elseif ($type === 'json') {
-            $adapter = $this->jsonAdapter;
+            $reader = $this->jsonDR;
         } else {
-            return new Response(\sprintf('\'%s\' adapter is not defined', $type));
+            return new Response(\sprintf('\'%s\' reader is not defined', $type));
         }
 
-        $entity = (new VehicleRepository($adapter))->find((int) $id);
+        $entity = (new CarRepository($reader))->findById((int) $id);
         if ($entity === null) {
             return new Response(\sprintf('Entity of type \'%s\' with ID \'%d\' not found', $type, $id));
         }
 
-        return $this->render('vehicle.html.twig', ['item' => $entity]);
+        return $this->render('car.html.twig', ['item' => $entity]);
+    }
+
+    public function render(string $template, array $params = []): Response
+    {
+        try {
+            $content = $this->twig->render($template, $params);
+            return new Response($content, Response::HTTP_OK);
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
