@@ -24,6 +24,8 @@ abstract class AbstractDataReader
     }
 
     /**
+     * Template method
+     *
      * @return iterable
      */
     public final function getData(): iterable
