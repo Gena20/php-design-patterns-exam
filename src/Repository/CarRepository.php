@@ -20,7 +20,7 @@ class CarRepository
     {
         $res = array_filter((array)$this->data, fn (object $object) => (int)$object->id === $id);
         if (count($res) > 0)
-            return CarFactory::build(
+            return Car::build(
                 array_values($res)[0]
             );
         return null;
@@ -31,6 +31,6 @@ class CarRepository
         $count = count($this->data);
         if ($offset >= $count)
             throw new \RuntimeException(sprintf('Max offset is %d, %d was given', ($count - 1), $offset));
-        return array_map(fn (object $obj) => CarFactory::build($obj), array_slice($this->data, $offset, $length));
+        return array_map(fn (object $obj) => Car::build($obj), array_slice($this->data, $offset, $length));
     }
 }

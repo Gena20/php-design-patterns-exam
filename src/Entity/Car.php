@@ -4,6 +4,8 @@
 namespace App\Entity;
 
 
+use ReflectionClass;
+
 class Car
 {
     private ?int $id = null;
@@ -14,7 +16,30 @@ class Car
     private ?string $vin = null;
     private ?int $mileage = null;
 
+    /**
+     * Factory method
+     *
+     * @param object $data
+     * @param bool $buildObj
+     * @return object
+     * @throws \ReflectionException
+     */
+    static public function build(object $data, $buildObj=true): object
+    {
+        if (!$buildObj)
+            return $data;
 
+        $carRef = new ReflectionClass(self::class);
+        $car = $carRef->newInstanceWithoutConstructor();
+        foreach ((array)$data as $key => $val) {
+            if (property_exists(self::class, $key)) {
+                $prop = $carRef->getProperty($key);
+                $prop->setAccessible(true);
+                $prop->setValue($car, $val);
+            }
+        }
+        return $car;
+    }
 
     /**
      * @return int|null
