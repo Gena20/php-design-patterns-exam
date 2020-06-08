@@ -29,7 +29,7 @@ class Application
         return static::$instance;
     }
 
-    public function terminate(): void
+    public function dispose(): void
     {
         self::$instance = null;
         $this->routeConfig = null;
@@ -48,7 +48,6 @@ class Application
             return new Response('Page not found', Response::HTTP_NOT_FOUND);
 
         $callback = $this->routeConfig->offsetGet($request->getPathInfo());
-
         return $callback($request);
     }
 

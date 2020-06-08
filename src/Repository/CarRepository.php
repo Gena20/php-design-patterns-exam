@@ -6,7 +6,6 @@ namespace App\Repository;
 
 use App\DataReader\AbstractDataReader;
 use App\Entity\Car;
-use App\Entity\CarFactory;
 
 class CarRepository
 {
@@ -19,7 +18,7 @@ class CarRepository
     public function findById(int $id): ?object
     {
         $res = array_filter((array)$this->data, fn (object $object) => (int)$object->id === $id);
-        if (count($res) > 0)
+        if (count($res) > 0 && count(array_values($res)[0]) > 0)
             return Car::build(
                 array_values($res)[0]
             );
@@ -31,6 +30,6 @@ class CarRepository
         $count = count($this->data);
         if ($offset >= $count)
             throw new \RuntimeException(sprintf('Max offset is %d, %d was given', ($count - 1), $offset));
-        return array_map(fn (object $obj) => Car::build($obj), array_slice($this->data, $offset, $length));
+        return array_map(fn (object $obj) => isset($obj) ? Car::build($obj) : $obj, array_slice($this->data, $offset, $length));
     }
 }

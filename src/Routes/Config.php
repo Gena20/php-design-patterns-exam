@@ -2,22 +2,19 @@
 
 namespace App\Routes;
 
-/**
- * Simple router config.​​
- */
 class Config implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array|callable[]
      */
-    protected array $routes;
+    protected array $routesConfig;
 
     /**
      * @param array $routes
      */
     public function __construct(array $routes = [])
     {
-        $this->routes = $routes;
+        $this->routesConfig = $routes;
     }
 
     /**
@@ -43,7 +40,7 @@ class Config implements \ArrayAccess, \IteratorAggregate
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->routes);
+        return new \ArrayIterator($this->routesConfig);
     }
 
     /**
@@ -51,7 +48,7 @@ class Config implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetExists($offset): bool
     {
-        return \array_key_exists($offset, $this->routes);
+        return \array_key_exists($offset, $this->routesConfig);
     }
 
     /**
@@ -59,7 +56,7 @@ class Config implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetGet($offset)
     {
-        return $this->routes[$offset] ?? null;
+        return $this->routesConfig[$offset] ?? null;
     }
 
     /**
@@ -67,7 +64,7 @@ class Config implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetSet($offset, $value): self
     {
-        $this->routes[$offset] = $value;
+        $this->routesConfig[$offset] = $value;
 
         return $this;
     }
@@ -77,7 +74,7 @@ class Config implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetUnset($offset): self
     {
-        unset($this->routes[$offset]);
+        unset($this->routesConfig[$offset]);
 
         return $this;
     }
